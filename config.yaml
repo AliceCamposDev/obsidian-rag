@@ -1,0 +1,14 @@
+general:
+  vault_path: './data/clean_vault'
+  ollama_endpoint: "http://localhost:11434/api"
+
+querry:
+  db_path: "./vector_db_optimized"
+  query_model: "mistral:latest"
+
+embedding:
+  embedding_model: "bge-m3:567m"
+  output_path: "./data"
+
+
+#nomic-embed-text
