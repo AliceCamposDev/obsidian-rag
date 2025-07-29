@@ -4,21 +4,16 @@ import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-import hashlib
-import random
 import numpy as np
-from rank_bm25 import BM25Okapi
-from typing import List
-from langchain_core.embeddings import Embeddings
-from langchain_community.document_loaders import DirectoryLoader
 from langchain_community.vectorstores import FAISS
-from langchain_community.retrievers import BM25Retriever
-from langchain_community.retrievers import TFIDFRetriever
 from sentence_transformers import CrossEncoder
 import requests
 from src.embedding.generate_enbeddings import OllamaEmbeddingWrapper, setup_indexes
 import json
 import pickle
+import src.utils.utils as utils
+
+config = utils.load_config()
 
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -53,14 +48,14 @@ class LocalRAGSystem:
 
     
     def retrieve_context(self, query):
-        TOP_K_INITIAL = 20
-        TOP_K_FINAL = 5
+        topK_pool = config["context"]["topK_files_pool"]
+        topK = config["context"]["topK_files"]
     
-        vector_results = self.vector_store.similarity_search(query = query, k=TOP_K_INITIAL)
+        vector_results = self.vector_store.similarity_search(query = query, k=topK_pool)
         
         tokenized_query = query.split()
         bm25_scores = self.bm25_index.get_scores(tokenized_query)
-        top_indices = np.argsort(bm25_scores)[::-1][:TOP_K_INITIAL]
+        top_indices = np.argsort(bm25_scores)[::-1][:topK_pool]
         bm25_results = [self.documents[i] for i in top_indices]
         
         all_results = []
@@ -80,12 +75,12 @@ class LocalRAGSystem:
                 scored_docs = list(zip(all_results, scores))
                 scored_docs.sort(key=lambda x: x[1], reverse=True)
                 
-                top_docs = [doc for doc, _ in scored_docs[:TOP_K_FINAL]]
+                top_docs = [doc for doc, _ in scored_docs[:topK]]
             except Exception as e:
                 print(f"Erro no re-ranking: {e}")
-                top_docs = all_results[:TOP_K_FINAL]
+                top_docs = all_results[:topK]
         else:
-            top_docs = all_results[:TOP_K_FINAL]
+            top_docs = all_results[:topK]
             
         
         
@@ -98,9 +93,12 @@ class LocalRAGSystem:
     
     def generate_response(self, query, context):
         
-        with open('./prompts/querry_prompt.json', 'r', encoding='utf-8') as f:
+        with open('./prompts/query_prompt.json', 'r', encoding='utf-8') as f:
             prompts = json.load(f)
-        prompt = prompts["phi3-rpg-pt"]["template"].format(context=context, query=query)
+        
+        prompt_template = config["query"]["prompt"]
+        
+        prompt = prompts[prompt_template]["template"].format(context=context, query=query)
 
         try:
             response = requests.post(

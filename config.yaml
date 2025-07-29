@@ -2,13 +2,28 @@ general:
   vault_path: './data/clean_vault'
   ollama_endpoint: "http://localhost:11434/api"
 
-querry:
-  db_path: "./vector_db_optimized"
-  query_model: "mistral:latest"
+query:
+  db_path: "./data/vector"
+  prompt: "phi3-rpg-pt"
+  query_model: "tinyllama"
 
 embedding:
-  embedding_model: "bge-m3:567m"
+  embedding_model: "snowflake-arctic-embed:22m"
   output_path: "./data"
+
+chat_log:
+  path: './data/chat_logs'
+
+context:
+  topK_files_pool: 4
+  topK_files: 2
 
 
 #nomic-embed-text
+#bge-m3:567m
+#snowflake-arctic-embed:22m
+
+#mistral:latest
+#phi3:mini
+#gemma3n:e2b
+#tinyllama

@@ -14,6 +14,6 @@
     },
     "phi3-rpg-pt":
     {
-    "template": "\n[BRAZILIAN PORTUGUESE]\n Você é um assistente de IA especialista em uma camapanha de rpg de dungeons and dragons 5e escrita em um vault do obsidian.\nUse as informações fornecidas para responder, caso não tenha irformações sobre a pergunta, diga\n.CONTEXTO:\n{context}\n<|end|>\n<|user|>\n{query}\n<|end|>\n<|assistant|>\n"
+    "template": "\n Você é um assistente de IA especialista em uma camapanha de rpg de dungeons and dragons 5e escrita em um vault do obsidian.\nUse as informações fornecidas para responder, caso não tenha irformações sobre a pergunta, diga\n.CONTEXTO:\n{context}\n<|end|>\n<|user|>\n{query}\n<|end|>\n<|assistant|>\n"
     }
 }

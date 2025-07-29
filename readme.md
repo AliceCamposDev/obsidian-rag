@@ -18,3 +18,7 @@
 - smart answer for technical terms and sheet cheats
 - handle images and other files
 - language settings
+- documentation
+
+
+<!-- ollama serve -->

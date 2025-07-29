@@ -1,0 +1,10 @@
+types-PyYAML
+numpy
+rank-bm25
+langchain_core
+langchain_community
+sentence_transformers
+unstructured
+"unstructured[md]"
+python-magic-bin
+faiss-cpu
