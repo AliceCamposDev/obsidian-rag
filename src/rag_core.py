@@ -18,17 +18,7 @@ config = utils.load_config()
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-
-VECTOR_DB_PATH = "vector_db_optimized"
 OLLAMA_ENDPOINT = "http://localhost:11434/api/generate"
-EMBEDDING_ENDPOINT = "http://localhost:11434/api/embeddings"
-EMBEDDING_MODEL = "bge-m3:567m"
-
-MODEL_NAME = "mistral:latest"
-
-TOP_K = 5
-LOG_FILE = "chat_history.log"
-
 
 class LocalRAGSystem:
     def __init__(self, vault_path, update_vault = False):
@@ -43,8 +33,6 @@ class LocalRAGSystem:
 
             with open("./data/faiss_index/files/documents.pkl", "rb") as f:
                 self.documents = pickle.load(f)
-        
-        
 
     
     def retrieve_context(self, query):
@@ -104,7 +92,7 @@ class LocalRAGSystem:
             response = requests.post(
                 OLLAMA_ENDPOINT,
                 json={
-                    "model": MODEL_NAME,
+                    "model": config["query"]["query_model"],
                     "prompt": prompt,
                     "stream": False,
                     "options": {"temperature": 0},
