@@ -3,7 +3,7 @@
 - less spaghetti code
 - make the readme file
 - requirements/setup
-- better yaml
+- better yaml config load
 - logging
 - mypy types
 - second search with small chunks (vector_DB)
@@ -15,7 +15,7 @@
 - auto summarize for large files like entire books
 - auto update embedding based on changed files
 - better handling code snippets
-- smart answer for technical terms and sheet cheats
+- smart answer for technical terms and cheat sheets
 - handle images and other files
 - language settings
 - documentation
