@@ -2,8 +2,9 @@ import os
 import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from src.rag_core import LocalRAGSystem
+print("start")
+from src.rag_core import RAGSystem
+print ("rag imported")
 import time
 from src.utils.chat_logger import ChatLogger
 import src.utils.utils as utils
@@ -19,7 +20,7 @@ if generate_emb_str == "y":
 
 vault_path = config["general"]["vault_path"]
 
-rag_system = LocalRAGSystem(
+rag_system = RAGSystem(
     vault_path=vault_path,
     update_vault = gen_enb_bool
 )

@@ -1,22 +1,24 @@
 general:
-  vault_path: './data/clean_vault'
+  vault_path: 'C:/lice_vault'
   ollama_endpoint: "http://localhost:11434/api"
 
 query:
   db_path: "./data/vector"
-  prompt: "phi3-rpg-pt"
-  query_model: "tinyllama"
+  prompt: "phi3-vault-only"
+  query_model: "deepseek-r1:7b"
 
 embedding:
   embedding_model: "snowflake-arctic-embed:22m"
+  endpoint: "http://localhost:11434/api/embeddings"
   output_path: "./data"
+  timeout: 60
 
 chat_log:
   path: './data/chat_logs'
 
 context:
-  topK_files_pool: 4
-  topK_files: 2
+  topK_files_pool: 10
+  topK_files: 5
 
 
 #nomic-embed-text
@@ -27,3 +29,5 @@ context:
 #phi3:mini
 #gemma3n:e2b
 #tinyllama
+# deepseek-r1:1.5b
+# deepseek-r1:7b

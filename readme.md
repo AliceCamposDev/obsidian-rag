@@ -1,11 +1,7 @@
 
 **TODO**:
-- less spaghetti code
 - make the readme file
-- requirements/setup
-- better yaml config load
 - logging
-- mypy types
 - second search with small chunks (vector_DB)
 - treat hallucinations, model censures, bad answers
 - list used and best matches files

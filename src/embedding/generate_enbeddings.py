@@ -43,7 +43,6 @@ def setup_indexes(vault_path):
     # process_vault(vault_path)
     print("starting embedding")
     
-    
     vector_store = FAISS.from_documents(filtered_docs, embeddings)
     
     os.makedirs(os.path.dirname(OUTPUT_PATH+ "./faiss_index/files"), exist_ok=True)
@@ -62,8 +61,6 @@ def setup_indexes(vault_path):
         pickle.dump(documents, f)
     
     return (embeddings, vector_store, bm25_index, documents)
-
-
 
 def process_file(filepath):
     try:
@@ -129,7 +126,7 @@ def process_vault(vault_path):
                             "chunk_id": j,
                             "text_preview": chunk[:150] + "..."
                         })
-        
+        656
         if all_embeddings:
             np.save(os.path.join(OUTPUT_PATH, "embeddings_temp.npy"), np.array(all_embeddings))
             with open(os.path.join(OUTPUT_PATH, "metadata_temp.json"), 'w') as f:

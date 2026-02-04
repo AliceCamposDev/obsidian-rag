@@ -1,14 +1,14 @@
 {
-    "mistral-deterministic":
+    "mistral-vault-only":
     {
      "template": "\n### System:\nYou are an AI assistant answering questions based on the user's Obsidian vault. Use only the provided context to answer. If the answer is not in the context, reply: \"the information isn't in the vault.\"\n\n### Context:\n{context}\n\n### Instruction:\n{query}\n\n### Response:\n"
     },
-    "phi3-deterministic":
+    "phi3-vault-only":
     {
     "template": "\nYou're an AI assistant answering questions based on the user's Obsidian vault.\nUse the provided context to answer. If unsure, state \"the information isn't in the vault\".CONTEXT:\n{context}\n<|end|>\n<|user|>\n{query}\n<|end|>\n<|assistant|>\n"
     }
     ,
-    "non_deterministic":
+    "general":
     {
     "template": "<|system|>\nYou're an AI assistant answering questions based on the user's Obsidian vault.\nUse the provided context to answer.\n\nCONTEXT:\n{context}\n\n<|end|>\n<|user|>\n{query}<|end|>\n<|assistant|>\n"
     },

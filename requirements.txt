@@ -5,6 +5,8 @@ langchain_core
 langchain_community
 sentence_transformers
 unstructured
-"unstructured[md]"
 python-magic-bin
 faiss-cpu
+unstructured[md]
+# libmagic
+python-magic-bin

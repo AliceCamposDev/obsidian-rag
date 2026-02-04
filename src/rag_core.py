@@ -1,50 +1,46 @@
-
-import os
-import sys
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
+from pathlib import Path
+from typing import Any
+from src.utils.utils import load_docs, load_vault, load_config
+from src.embedding.bm25 import generate_bm25_index, load_bm25_index
+from src.embedding.vector_db import generate_vector_db, load_vector_db
 import numpy as np
-from langchain_community.vectorstores import FAISS
-from sentence_transformers import CrossEncoder
-import requests
-from src.embedding.generate_enbeddings import OllamaEmbeddingWrapper, setup_indexes
 import json
-import pickle
-import src.utils.utils as utils
+import requests
 
-config = utils.load_config()
+config = load_config()
 
-import warnings
-warnings.filterwarnings("ignore", category=FutureWarning)
-
-OLLAMA_ENDPOINT = "http://localhost:11434/api/generate"
-
-class LocalRAGSystem:
-    def __init__(self, vault_path, update_vault = False):
+class RAGSystem:
+    def __init__(self: Any, vault_path: Path, update_vault: bool = False) -> None:
         self.vault_path = vault_path
-        self.cross_encoder = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
         if update_vault:
-            self.embeddings, self.vector_store, self.bm25_index, self.documents = setup_indexes(vault_path)
+            try:
+                self.update_vault()
+            except Exception as e:
+                print("ERROR while updating vault indexes? ", e)
         else:
-            self.vector_store = FAISS.load_local("./data/faiss_index/files", OllamaEmbeddingWrapper(), allow_dangerous_deserialization=True)
-            with open("./data/faiss_index/files/bm25.pkl", "rb") as f:
-                self.bm25_index = pickle.load(f)
-
-            with open("./data/faiss_index/files/documents.pkl", "rb") as f:
-                self.documents = pickle.load(f)
-
+            try:
+                self.load_embeddings()
+            except Exception as e:
+                print("could not load files, generating embeddings again")
+                self.update_vault()
+                
+                
+                
+                
+                
+                
+    #TODO: THIS PART WILL BE REFACTORED
     
-    def retrieve_context(self, query):
+    def retrieve_context(self, query: Any) -> Any:
         topK_pool = config["context"]["topK_files_pool"]
         topK = config["context"]["topK_files"]
     
-        vector_results = self.vector_store.similarity_search(query = query, k=topK_pool)
+        vector_results = self.vector_db.similarity_search(query = query, k=topK_pool)
         
         tokenized_query = query.split()
         bm25_scores = self.bm25_index.get_scores(tokenized_query)
         top_indices = np.argsort(bm25_scores)[::-1][:topK_pool]
-        bm25_results = [self.documents[i] for i in top_indices]
+        bm25_results = [self.docs[i] for i in top_indices]
         
         all_results = []
         seen_ids = set()
@@ -78,8 +74,8 @@ class LocalRAGSystem:
             context += f"\n**Document {i+1}:** {doc.page_content[:2000]}...\n"
 
         return context
-    
-    def generate_response(self, query, context):
+        
+    def generate_response(self: Any, query: Any, context: Any) -> Any :
         
         with open('./prompts/query_prompt.json', 'r', encoding='utf-8') as f:
             prompts = json.load(f)
@@ -89,25 +85,57 @@ class LocalRAGSystem:
         prompt = prompts[prompt_template]["template"].format(context=context, query=query)
 
         try:
+            ollama_endpoint = config["general"]["ollama_endpoint"]
             response = requests.post(
-                OLLAMA_ENDPOINT,
+                ollama_endpoint + '/generate/',
                 json={
                     "model": config["query"]["query_model"],
                     "prompt": prompt,
                     "stream": False,
                     "options": {"temperature": 0},
-                    "top_p": 0.9,
-                    "repeat_penalty": 1.1, 
-                    "top_k": 40,
+                    "top_p": 0.5,
+                    "repeat_penalty": 1.2, 
+                    "top_k": 20,
                 }
             )
             response.raise_for_status()
+            print("prompt tokens: ", response.json()["prompt_eval_count"])
+            print("response tokens: ", response.json()["eval_count"])
             return response.json()["response"].strip()
         except Exception as e:
             return f"Error generating response: {e}"
 
         
-    def process_query(self, session_id, query):
+    def process_query(self: Any, session_id: Any, query: Any) -> Any:
         context = self.retrieve_context(query)
         response = self.generate_response(query, context)
-        return response, context
+        return response, context   
+    
+    
+    
+    #TODO: REFAC CODE ABOVE
+     
+                
+                
+                
+                
+                
+    def update_vault(self) -> bool:
+        """
+            Update embeddings from all files inside the vault
+
+        Returns:
+            bool: True if updated, False otherwise
+        """       
+        self.bm25_index = generate_bm25_index(self.vault_path)
+        self.vector_db = generate_vector_db(self.vault_path)
+        self.docs = load_vault(self.vault_path)  #TODO: change func name
+        return True                              #TODO: remove redundant load/save   
+    
+
+    def load_embeddings(self) -> bool:
+        self.bm25_index = load_bm25_index(self.vault_path)
+        self.vector_db = load_vector_db(self.vault_path)
+        self.docs = load_docs()
+        return True
+    
