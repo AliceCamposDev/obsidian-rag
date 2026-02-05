@@ -18,10 +18,11 @@ def generate_vector_db (vault_path: Path) -> Any:
             filtered_docs.append(doc)
     
     print("starting embedding")
-    
-    embedder = OllamaEmbeddingWrapper() #i guess i created a new word
-    vector_db = FAISS.from_documents(filtered_docs, embedder)
-    
+    try:
+        embedder = OllamaEmbeddingWrapper() #i guess i created a new word
+        vector_db = FAISS.from_documents(filtered_docs, embedder)
+    except Exception as e:
+       print("vish ", e)
     try:
         vector_db_path: Path = Path("/data/vector_db")
         os.makedirs(os.path.dirname(vector_db_path), exist_ok=True)

@@ -6,6 +6,8 @@ from src.embedding.vector_db import generate_vector_db, load_vector_db
 import numpy as np
 import json
 import requests
+from src.retrieve_context.hybrid_retriever import HybridRetriever
+from src.retrieve_context.retrieve_context import gen_vector_results, gen_bm25_results
 
 config = load_config()
 
@@ -13,10 +15,8 @@ class RAGSystem:
     def __init__(self: Any, vault_path: Path, update_vault: bool = False) -> None:
         self.vault_path = vault_path
         if update_vault:
-            try:
-                self.update_vault()
-            except Exception as e:
-                print("ERROR while updating vault indexes? ", e)
+            self.update_vault()
+
         else:
             try:
                 self.load_embeddings()
@@ -27,53 +27,10 @@ class RAGSystem:
                 
                 
                 
-                
+
                 
     #TODO: THIS PART WILL BE REFACTORED
-    
-    def retrieve_context(self, query: Any) -> Any:
-        topK_pool = config["context"]["topK_files_pool"]
-        topK = config["context"]["topK_files"]
-    
-        vector_results = self.vector_db.similarity_search(query = query, k=topK_pool)
-        
-        tokenized_query = query.split()
-        bm25_scores = self.bm25_index.get_scores(tokenized_query)
-        top_indices = np.argsort(bm25_scores)[::-1][:topK_pool]
-        bm25_results = [self.docs[i] for i in top_indices]
-        
-        all_results = []
-        seen_ids = set()
-        top_docs = []
-        for doc in vector_results + bm25_results:
-            doc_id = doc.metadata.get('source', '') + str(hash(doc.page_content[:100]))
-            if doc_id not in seen_ids:
-                seen_ids.add(doc_id)
-                all_results.append(doc)
-        
-        if hasattr(self, 'cross_encoder') and self.cross_encoder:
-            pairs = [(query, doc.page_content) for doc in all_results]
-            try:
-                scores = self.cross_encoder.predict(pairs)
-                
-                scored_docs = list(zip(all_results, scores))
-                scored_docs.sort(key=lambda x: x[1], reverse=True)
-                
-                top_docs = [doc for doc, _ in scored_docs[:topK]]
-            except Exception as e:
-                print(f"Erro no re-ranking: {e}")
-                top_docs = all_results[:topK]
-        else:
-            top_docs = all_results[:topK]
-            
-        
-        
 
-        context = ""
-        for i, doc in enumerate(top_docs):
-            context += f"\n**Document {i+1}:** {doc.page_content[:2000]}...\n"
-
-        return context
         
     def generate_response(self: Any, query: Any, context: Any) -> Any :
         
@@ -107,7 +64,15 @@ class RAGSystem:
 
         
     def process_query(self: Any, session_id: Any, query: Any) -> Any:
-        context = self.retrieve_context(query)
+        # context = self.retrieve_context(query)
+        vector_results = gen_vector_results(self.vector_db, query)
+        bm25_results =  gen_bm25_results(self.docs, self.bm25_index, query)
+        retriever = HybridRetriever ()
+        top_docs = retriever.retrieve(query, vector_results,  bm25_results )
+        context = ""
+        for i, doc in enumerate(top_docs):
+            context += f"\n**Document {i+1}:** {doc.page_content[:2000]}...\n"
+            
         response = self.generate_response(query, context)
         return response, context   
     

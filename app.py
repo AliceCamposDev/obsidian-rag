@@ -1,10 +1,8 @@
 import os
 import sys
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-print("start")
+
 from src.rag_core import RAGSystem
-print ("rag imported")
 import time
 from src.utils.chat_logger import ChatLogger
 import src.utils.utils as utils
@@ -18,10 +16,8 @@ gen_enb_bool = False
 if generate_emb_str == "y":
     gen_enb_bool = True
 
-vault_path = config["general"]["vault_path"]
-
 rag_system = RAGSystem(
-    vault_path=vault_path,
+    vault_path = config["general"]["vault_path"],
     update_vault = gen_enb_bool
 )
 
@@ -29,7 +25,7 @@ session_id = f"session_{int(time.time())}"
 print("Chat initialized, enter 'exit' to leave.")
 
 while True:
-    query = input("\nAlice: ")
+    query: str = input("\nAlice: ")
     if query.lower() == 'exit':
         break
     

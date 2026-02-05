@@ -1,14 +1,15 @@
 general:
-  vault_path: 'C:/lice_vault'
+  vault_path: 'C:\workspace\rpg-guerrilha-urbana-back\fastapi\book'
   ollama_endpoint: "http://localhost:11434/api"
-
+  device: "cpu" #TODO: implement
+  
 query:
   db_path: "./data/vector"
   prompt: "phi3-vault-only"
   query_model: "deepseek-r1:7b"
 
 embedding:
-  embedding_model: "snowflake-arctic-embed:22m"
+  embedding_model: "bge-m3:567m"
   endpoint: "http://localhost:11434/api/embeddings"
   output_path: "./data"
   timeout: 60
@@ -20,11 +21,14 @@ context:
   topK_files_pool: 10
   topK_files: 5
 
+cross_encoder:
+  model: "cross-encoder/ms-marco-MiniLM-L-12-v2"
+
 
 #nomic-embed-text
 #bge-m3:567m
-#snowflake-arctic-embed:22m
-
+#snowflake-arctic-embed:22m             (too smol)
+ 
 #mistral:latest
 #phi3:mini
 #gemma3n:e2b
