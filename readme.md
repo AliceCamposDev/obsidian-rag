@@ -15,7 +15,7 @@ Obsidian-RAG (Retrieval-Augmented Generation) is a Python application that index
 * **Contextual Accuracy**: Responses are grounded directly in your vault's content, reducing hallucinations.
 * **Full Control**: Adjust the model, search parameters, and generation settings to suit your needs.
 
-## 🚀 Current Features
+## 🚀 Current POC Features
 
 * **Automatic Indexing**: Automatically processes Markdown (`.md`) files from your Obsidian vault.
 * **Semantic Search**: Finds relevant note snippets for your question using vector embeddings.
@@ -23,6 +23,12 @@ Obsidian-RAG (Retrieval-Augmented Generation) is a Python application that index
 * **Flexible Configuration**: Adjust details like LLM models, chunk sizes, and generation parameters via `config.yaml`.
 * **Command Line Interface (CLI)**: Simple, straightforward interface to interact with your knowledge.
 
+## 📚 Docs
+
+### **Product & Planning**
+- [Product Requirements (PRD)](docs/Product%20Requirements%20Document%20PRD.md) - Complete specification
+
+<!-- 
 ## 📦 Quick Installation and Setup
 
     Better wait for a stable version first mayb
@@ -44,7 +50,7 @@ Obsidian-RAG (Retrieval-Augmented Generation) is a Python application that index
 - smart answer for technical terms and cheat sheets
 - handle images and other files
 - language settings
-- documentation
+- documentation -->
 
 
 <!-- ollama serve -->

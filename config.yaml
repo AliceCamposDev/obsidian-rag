@@ -18,7 +18,7 @@ chat_log:
   path: './data/chat_logs'
 
 context:
-  topK_files_pool: 10
+  topK_files_pool: 5 #this is not correctly set, but its ok enough for a POC :thumbs_up:
   topK_files: 5
 
 cross_encoder:
