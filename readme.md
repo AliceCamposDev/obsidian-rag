@@ -4,7 +4,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.13%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-AGPL_v3-green.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/Status-Active_Development-yellow)](https://github.com/AliceCamposDev/obsidian-rag)
+[![Status](https://img.shields.io/badge/Status-Paused_Development-red)](https://github.com/AliceCamposDev/obsidian-rag)
 
 ## Overview
 
