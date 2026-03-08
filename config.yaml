@@ -5,8 +5,12 @@ general:
   
 query:
   db_path: "./data/vector"
-  prompt: "phi3-vault-only"
-  query_model: "deepseek-r1:7b"
+  prompt: "phi3-rpg-pt"
+  query_model: "qwen3.5:9b"
+  top_k: 40
+  repeat_penalty: 1.1
+  temperature: 0
+  top_p: 0.9
 
 embedding:
   embedding_model: "bge-m3:567m"
@@ -18,8 +22,8 @@ chat_log:
   path: './data/chat_logs'
 
 context:
-  topK_files_pool: 5 #this is not correctly set, but its ok enough for a POC :thumbs_up:
-  topK_files: 5
+  topK_files_pool: 3
+  topK_files: 3
 
 cross_encoder:
   model: "cross-encoder/ms-marco-MiniLM-L-12-v2"
@@ -35,3 +39,4 @@ cross_encoder:
 #tinyllama
 # deepseek-r1:1.5b
 # deepseek-r1:7b
+# qwen3.5:9b

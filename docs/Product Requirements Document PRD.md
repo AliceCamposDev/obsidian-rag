@@ -30,6 +30,4 @@ AGRAG can solve all of this problems
 ### 2.3 Privacy & Security Framework
 - Default operation without external dependencies (safe mode)
 - Precise permission management for external services
-- Optional local encryption for sensitive vaults
-- Forced encryption when using any external dependence
-- Auditable logs with transparent track of all interactions and modifications made by GRAG
+- Auditable logs with transparent track of all interactions and modifications made by AGRAG

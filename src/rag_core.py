@@ -32,7 +32,7 @@ class RAGSystem:
     #TODO: THIS PART WILL BE REFACTORED
 
         
-    def generate_response(self: Any, query: Any, context: Any) -> Any :
+    def generate_response(self: "RAGSystem", query: str, context: str) -> Any :
         
         with open('./prompts/query_prompt.json', 'r', encoding='utf-8') as f:
             prompts = json.load(f)
@@ -49,10 +49,10 @@ class RAGSystem:
                     "model": config["query"]["query_model"],
                     "prompt": prompt,
                     "stream": False,
-                    "options": {"temperature": 0},
-                    "top_p": 0.5,
-                    "repeat_penalty": 1.2, 
-                    "top_k": 20,
+                    "options": {"temperature": config["query"]["temperature"]},
+                    "top_p": config["query"]["top_p"],
+                    "repeat_penalty": config["query"]["repeat_penalty"], 
+                    "top_k": config["query"]["top_k"],
                 }
             )
             response.raise_for_status()
@@ -71,7 +71,7 @@ class RAGSystem:
         top_docs = retriever.retrieve(query, vector_results,  bm25_results )
         context = ""
         for i, doc in enumerate(top_docs):
-            context += f"\n**Document {i+1}:** {doc.page_content[:2000]}...\n"
+            context += f"\n**Document {i+1}:** {doc.page_content[:4000]}...\n"
             
         response = self.generate_response(query, context)
         return response, context   
@@ -104,3 +104,5 @@ class RAGSystem:
         self.docs = load_docs()
         return True
     
+
+

@@ -7,14 +7,20 @@ config = load_config()
 
 class HybridRetriever:
     def __init__(self, cross_encoder_model: str = config["cross_encoder"]["model"], device: str = config["general"]["device"]):
+        self.cross_encoder_model = cross_encoder_model
+        self.device = device
+        self._model: Optional[CrossEncoder] = None
+        print("[INFO] HybridRetriever inicializado (modelo será carregado sob demanda)")
+
+    def _load_model(self) -> None:
+        """Carrega o modelo CrossEncoder (chamado apenas quando necessário)."""
+        if self._model is not None:
+            return
         try:
-            self.model: Any = CrossEncoder(
-                cross_encoder_model, 
-                device = device
-            )
-            print(f"[SUCESSO] Modelo carregado")
+            self._model = CrossEncoder(self.cross_encoder_model, device=self.device)
+            print("[SUCESSO] Modelo CrossEncoder carregado")
         except Exception as e:
-            print(f"[ERRO] Falha ao carregar modelo: {e}")
+            print(f"[ERRO] Falha ao carregar modelo CrossEncoder: {e}")
             raise e
         
         # vector_results
@@ -25,7 +31,8 @@ class HybridRetriever:
         query: str,
         vector_results: List[Document] ,
         bm25_results: List[Document] ,
-        top_k: int = config["context"]["topK_files_pool"],
+        top_k_pool: int = config["context"]["topK_files_pool"],
+        top_k: int = config["context"]["topK_files"],
         vector_weight: float = 0.5,
         bm25_weight: float = 0.5,
         use_reranking: bool = True
@@ -77,7 +84,7 @@ class HybridRetriever:
         top_docs = [item['document'] for item in sorted_docs[:top_k]]
         
         # Aplicar reranking com cross-encoder se solicitado
-        if use_reranking and self.model and top_docs:
+        if use_reranking and self._model and top_docs:
             return self._rerank_with_cross_encoder(query, top_docs)
         
         return top_docs
@@ -98,7 +105,7 @@ class HybridRetriever:
             pairs = [(query, doc.page_content) for doc in documents]
             
             # Obter scores do cross-encoder
-            scores = self.model.predict(pairs)
+            scores = self._model.predict(pairs)
             
             # Combinar scores com documentos
             scored_docs = list(zip(documents, scores))

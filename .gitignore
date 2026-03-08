@@ -4,3 +4,8 @@ data/
 __pycache__/
 .mypy*
 transcribe.py
+
+# Added by cargo
+
+/target
+*/dont readme.md
