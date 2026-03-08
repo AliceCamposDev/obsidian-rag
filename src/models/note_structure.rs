@@ -70,7 +70,7 @@ pub struct ContentChunk {
 }
 
 impl Note {
-    pub fn new(raw_note: RawNote, chunks: HashMap<Uuid, ContentChunk>, rel_path: PathBuf) -> Self {
+    pub fn new(raw_note: RawNote, rel_path: PathBuf) -> Self {
         let title = Self::get_note_title(&rel_path);
         let str_wiki_links = Self::get_wiki_links(&raw_note);
         let chunks = Self::gen_chunks(&raw_note);
@@ -180,7 +180,7 @@ pub fn parse_note(path: &PathBuf) -> Note {
 
     let rel_path = path;
 
-    let note = Note::new(raw_note, chunks, rel_path.clone());
+    let note = Note::new(raw_note, rel_path.clone());
     // println!("title: {}", note.title);
     // println!("path: {}", note.rel_path.to_string_lossy().to_string());
     // println!("size: {}", note.raw_note.size.to_string());
