@@ -1,13 +1,10 @@
 use chrono::{DateTime, Utc};
-use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::collections::HashSet;
 use std::fs;
 use std::path::PathBuf;
-use stopwords::{Language, Spark, Stopwords};
-use urlencoding::decode;
 use uuid::Uuid;
+use crate::utils::text_preprocess::{tokenize, remove_stopwords, get_wiki_links};
 
 #[derive(Debug)]
 pub struct NoteMap {
@@ -72,7 +69,7 @@ pub struct ContentChunk {
 impl Note {
     pub fn new(raw_note: RawNote, rel_path: PathBuf) -> Self {
         let title = Self::get_note_title(&rel_path);
-        let str_wiki_links = Self::get_wiki_links(&raw_note);
+        let str_wiki_links = get_wiki_links(&raw_note.raw_content);
         let chunks = Self::gen_chunks(&raw_note);
 
         Self {
@@ -93,56 +90,15 @@ impl Note {
             .unwrap_or("no_title")
             .to_string()
     }
-    fn get_wiki_links(raw: &RawNote) -> Vec<String> {
-        let content = &raw.clone().raw_content;
-        let mut links = Vec::new();
-
-        let wiki_re = Regex::new(r"\[\[([^\]]+)\]\]").unwrap();
-        for cap in wiki_re.captures_iter(content) {
-            let target = &cap[1];
-            let target = target
-                .split(|c| c == '#' || c == '|')
-                .next()
-                .unwrap_or(target);
-            let target = target.trim_end_matches(".md");
-            let target = decode(target).unwrap_or_else(|_| target.into()).to_string();
-            links.push(target);
-        }
-
-        let md_re = Regex::new(r"\[[^\]]+\]\(([^)]+)\)").unwrap();
-        for cap in md_re.captures_iter(content) {
-            let target = &cap[1];
-            if target.contains("://") {
-                continue;
-            }
-            let target = target.trim_end_matches(".md");
-            let target = decode(target).unwrap_or_else(|_| target.into()).to_string();
-            links.push(target);
-        }
-        links
-    }
+    
     fn gen_chunks(raw: &RawNote) -> HashMap<Uuid, ContentChunk> {
         let content = raw.clone().raw_content;
         let content_len = content.len();
         let mut result = HashMap::new();
         let chunk_id = Uuid::new_v4();
-        let stops: HashSet<String> = Spark::stopwords(Language::English)
-            .unwrap()
-            .iter()
-            .map(|s| s.to_lowercase())
-            .collect();
-
-        let mut tokens: Vec<String> = content
-            .split_whitespace()
-            .map(|w| {
-                w.trim_matches(|c: char| !c.is_alphanumeric())
-                    .to_lowercase()
-            })
-            .filter(|w| !w.is_empty())
-            .collect();
-
-        tokens.retain(|w| !stops.contains(w));
-        let keywords: Vec<String> = tokens;
+       
+        let tokens: Vec<String> = tokenize(&content);
+        let keywords: Vec<String> = remove_stopwords(tokens);
 
         // println!("{:?}", keywords);
         let chunk = ContentChunk {

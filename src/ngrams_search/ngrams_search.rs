@@ -1,22 +1,12 @@
 use crate::models::note_structure::NoteMap;
 use std::collections::HashMap;
 use uuid::Uuid;
+use crate::utils::text_preprocess::{tokenize};
 
 pub fn nlp_search_fn(query: &str, note_map: &NoteMap) {
     println!("Query: {}", query);
     println!("Searching in {} notes...", note_map.notes.len());
-    fn normalize(text: &str) -> String {
-        text.to_lowercase()
-            .replace(",", "")
-            .replace(".", "")
-            .replace(";", "")
-    }
-    fn tokenize(text: &str) -> Vec<String> {
-        normalize(text)
-            .split_whitespace()
-            .map(|s| s.to_string())
-            .collect()
-    }
+
     fn extract_np_candidates(text: &str) -> Vec<String> {
         let tokens = tokenize(text);
         let mut phrases = Vec::new();
@@ -39,7 +29,7 @@ pub fn nlp_search_fn(query: &str, note_map: &NoteMap) {
         }
 
         for i in 0..words.len() {
-            for j in i + 2..=words.len() {
+            for j in i + 1..=words.len() {
                 phrases.push(words[i..j].join(" "));
             }
         }
@@ -50,9 +40,15 @@ pub fn nlp_search_fn(query: &str, note_map: &NoteMap) {
     let note_map_notes_cl = note_map.notes.clone();
     let mut cont = 0;
     for (id, note) in note_map_notes_cl {
-        let text = &note.raw_note.raw_content;
+       let text: String = note
+        .chunks
+        .values()
+        .flat_map(|chunk| chunk.keywords.clone())
+        .collect::<Vec<String>>()
+        .join(" ");
+
         let doc_id = id;
-        let candidates = extract_np_candidates(text);
+        let candidates = extract_np_candidates(&text);
 
         for np in candidates {
             let phrases = expand_np(&np);

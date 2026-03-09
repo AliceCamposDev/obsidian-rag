@@ -1,7 +1,9 @@
 mod load_vault;
 mod models;
 mod ngrams_search;
+mod utils;
 
+// use utils::text_preprocess;
 use ngrams_search::ngrams_search::nlp_search_fn;
 use load_vault::load_vault::load_vault_fn;
 use models::note_structure::NoteMap;
