@@ -1,6 +1,8 @@
 mod load_vault;
 mod models;
+mod ngrams_search;
 
+use ngrams_search::ngrams_search::nlp_search_fn;
 use load_vault::load_vault::load_vault_fn;
 use models::note_structure::NoteMap;
 
@@ -10,9 +12,10 @@ fn main() {
         r"C:\workspace\nlp_search\Bible Study Kit (v1)",
     ));
 
-    for val in map.notes.values() {
-        println!("{:?}", val.note_id);
-    }
 
+
+    let query = "Why do you kick at my sacrifice and at my offering";
     
+    nlp_search_fn(&query, &map);
+
 }

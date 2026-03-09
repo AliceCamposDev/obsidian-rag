@@ -144,7 +144,7 @@ impl Note {
         tokens.retain(|w| !stops.contains(w));
         let keywords: Vec<String> = tokens;
 
-        println!("{:?}", keywords);
+        // println!("{:?}", keywords);
         let chunk = ContentChunk {
             chunk_id: chunk_id,
             keywords: keywords,
